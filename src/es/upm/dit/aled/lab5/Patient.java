@@ -165,23 +165,16 @@ public class Patient extends Thread {
 	@Override
 	public void run() {
 		// TODO
-		Position2D position1 = new Position2D(1,2);
-		Area area1 = new Area("Triaje", 10000, 3, position1);
-		Patient patient1 = new Patient(1, area1);
-		
-		try {
-			area1.enter(patient1);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+		this.location.enter(this);
+		attendedAtLocation();
+		this.location.exit(this);
+		while (indexProtocol < protocol.size()) {
+			advanceProtocol();
+			this.location.enter(this);
+			attendedAtLocation();
+			this.location.exit(this);
 		}
-		
-		int tiempo1 = area1.getTime();
-		try {
-			sleep(tiempo1);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		area1.exit(patient1);
+		EmergencyRoomGUI.getInstance().removePatient(this);
 	}
 
 }

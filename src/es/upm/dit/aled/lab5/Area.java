@@ -102,16 +102,21 @@ public class Area {
 	 * @throws InterruptedException 
 	 */
 	// TODO: method enter
-	public synchronized void enter(Patient patient) throws InterruptedException {
-		
-		while(numPatients == capacity) {
-			waiting++;
-			wait();
+	public synchronized void enter(Patient patient){
+		try {
+			this.waiting++;
+			while (this.numPatients >= this.capacity) {
+				System.out.println("Patient " + patient.getNumber() + " waiting for " + this.name);
+				wait();
+			}
+			this.waiting--;
+			this.numPatients++;
+		} catch(InterruptedException e) {
+			e.printStackTrace();
+			Thread.currentThread().interrupt();
 		}
-			numPatients++;
-			waiting--;
-			notifyAll();
-
+			
+		
 	}
 	
 	/**
@@ -122,9 +127,8 @@ public class Area {
 	 */
 	// TODO method exit
 	public synchronized void exit(Patient patient) {
-		if(numPatients > 0) {
-			numPatients--;
-		}
+	
+		this.numPatients--;
 		notifyAll();
 	}
 	
@@ -134,7 +138,7 @@ public class Area {
 	 * @return The capacity.
 	 */
 
-	public synchronized int getCapacity() {
+	public  int getCapacity() {
 		return capacity;
 	}
 	

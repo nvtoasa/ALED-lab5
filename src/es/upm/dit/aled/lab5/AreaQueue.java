@@ -14,5 +14,30 @@ import es.upm.dit.aled.lab5.gui.Position2D;
  */
 public class AreaQueue extends Area {
 
-	// TODO
+	private Queue<Patient> cola;
+	
+	public AreaQueue(String name, int time, int capacity, Position2D position) {
+		super(name, time, capacity, position);
+		this.cola = new LinkedList<Patient>();
+	}
+	
+	@Override
+	public synchronized void enter(Patient patient) {
+		try {
+			this.waiting++;
+			this.cola.offer(patient);
+			while (this.cola.peek() != patient || this.numPatients >= this.capacity) {
+				System.out.println("Patient " + patient.getNumber() + " waiting for " + this.name);
+				wait();
+			}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			Thread.currentThread().interrupt(); // Restore interrupted status
+		}
+		this.cola.remove(); // Dequeue from the front
+		this.numPatients++;
+		this.waiting--;
+		System.out.println("Patient " + patient.getNumber() + " has entered " + this.name);
+	}
+	// SOLUCION
 }
